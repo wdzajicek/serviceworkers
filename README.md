@@ -1,6 +1,8 @@
 
 # Service Workers
 
+> ...testing environment for implementing service workers and other PWA technologies into a JAMStack website...
+
 -----
 
 ## Overview

@@ -14,7 +14,13 @@ const plugins = [
   }),
   new WebpackHashFilePlugin({
     path: '../_data/',
-    fileName: 'hash.yml'
+    fileName: 'hash',
+    fileExtension: 'yml'
+  }), // HASH IS USED TO KICK-OFF JEKYLL
+  new WebpackHashFilePlugin({
+    path: '../',
+    fileName: 'hash',
+    fileExtension: 'json'
   }), // HASH IS USED TO KICK-OFF JEKYLL
 ];
 

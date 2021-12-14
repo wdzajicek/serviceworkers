@@ -5,7 +5,18 @@ baseurl: '/'
 layout: default
 ---
 
-<main class="container">
+<header class="header">
+  <div class="header--bg">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <h1 class="h1 h1--header text-center">{{ site.title }}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="container main--min-height">
   <div class="row">
     <div class="col">
       <h1 class="h1">{{ site.title }}</h1>

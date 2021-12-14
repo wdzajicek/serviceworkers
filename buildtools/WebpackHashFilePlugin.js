@@ -11,18 +11,29 @@ function getFilesizeInBytes(filename) { // Small function to get the size of the
 class WebpackHashFilePlugin{
   constructor (options){
     this.options= Object.assign({}, {
-      fileName: 'hash.yml',
-      path: '../_data'
+      fileName: 'hash',
+      path: '../_data',
+      fileExtension: 'yml'
     }, options)
   }
 
   apply(compiler) {
     const options = this.options;
     compiler.hooks.done.tap("WebpackHashFilePlugin", stats => {
-      const content = stats.hash;
+      let content;
+
+      if (options.fileExtension == 'json') {
+        content = `{\n  "hash": "${stats.hash}"\n}`;
+      }
+
+      if (options.fileExtension == 'yml') {
+        content = stats.hash;
+      }
+
       const outputPath = options.path;
       const fileName = options.fileName;
-      const output = path.resolve(__dirname, outputPath, fileName);
+      const extension = options.fileExtension;
+      const output = path.resolve(__dirname, outputPath, `${fileName}.${extension}`);
       fs.writeFile(output, content, (err) => {
         if (err) {
           console.error(err)
