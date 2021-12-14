@@ -5,7 +5,7 @@
 
 ## Overview
 
-This project uses Jekyll + Nodejs + Webpack + Corejs + Bootstrap to compile static site files and bundle/compile JS/SCSS. This project is for the testing of service workers and implementing of other PWA techniques.
+This project uses Jekyll + Nodejs + Webpack + Corejs + Bootstrap to compile static site files and bundle/compile JS/SCSS. **This project is a testing environment for implementing service workers and other PWA technologies into a JAMStack website with modern ES6/SCSS capabilities.**
 
 ## Installation
 
