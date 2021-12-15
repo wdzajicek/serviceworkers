@@ -6,9 +6,9 @@ window.addEventListener('load', () => {
     .then(() => import('bootstrap/js/src/dropdown'))
     .then(() => import('bootstrap/js/src/collapse'))
     .then(() => import('./footerDate').then(({default: footerDate}) => footerDate()))
-    .then(() => {
-      import('./registerServiceWorker.js').then(({default: registerServiceWorker}) => {
-        registerServiceWorker();
-      })
-    })
+    // .then(() => {
+    //   import('./registerServiceWorker.js').then(({default: registerServiceWorker}) => {
+    //     registerServiceWorker();
+    //   })
+    // })
   });

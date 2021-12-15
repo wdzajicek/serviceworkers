@@ -24,6 +24,8 @@ sass:
 future: true
 ## Build settings
 markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
 exclude:
   - "node_modules"
   - "npm-debug.log"
