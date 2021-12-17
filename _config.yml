@@ -26,6 +26,11 @@ future: true
 markdown: kramdown
 kramdown:
   syntax_highlighter: rouge
+
+collections:
+  accordions:
+    people: false
+
 exclude:
   - "node_modules"
   - "npm-debug.log"

@@ -1,0 +1,30 @@
+{% assign accordion_id = page.title | replace: ' ', '' %}
+{% assign page_title = page.title %}
+{% assign sorted_cards = site.accordions | where: "accordion_page", page_title | sort: "order" %}
+<div class="accordion" id="{{ accordion_id}}accordion">
+  {% for card in sorted_cards %}
+  {% assign card_id = card.title | remove: ' ' | remove: '.' %}
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="{{ cardi_id }}">
+      <button
+        class="accordion-button"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapse{{ card_id }}"
+        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+        aria-controls="collapse{{ card_id }}">
+        {{ card.title }}
+      </button>
+    </h2>
+    <div
+      id="collapse{{ card_id }}"
+      class="accordion-collapse collapse{% if forloop.first %} show{% endif %}"
+      aria-labelledby="{{ cardi_id }}"
+      data-bs-parent="#{{ accordion_id }}accordion">
+      <div class="accordion-body">
+        {{ card.content }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
