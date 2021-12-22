@@ -5,8 +5,8 @@ baseurl: '/'
 layout: default
 ---
 
-# {{ site.title }}
-{: .h1.mb-5 }
+# JAMstack + Service Workers
+{: .h1.mb-5}
 
 ## Contents
 {: .h2.mb-4 }
