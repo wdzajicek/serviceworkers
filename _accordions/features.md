@@ -6,7 +6,7 @@ title: Project Features
 
 
 ## Project Features
-{: .h2.mb-5 }
+{: .h2.mb-5 id="features" }
 
 To follow along with this documentation it will help to know about some of its features. 
 The features discussed in this section are as follows:

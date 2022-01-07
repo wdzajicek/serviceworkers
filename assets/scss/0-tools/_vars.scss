@@ -2,6 +2,7 @@ $font-family-main: 'Roboto', sans-serif;
 $font-family-code: 'Roboto Mono', monospace;
 
 // Colors
+$color-white: #fff;
 $color-green-pure: #0f0;
 $color-green-light: #90ee90;
 $color-yellow-light: #ffff97;
@@ -9,6 +10,8 @@ $color-blue-light: #87cefa;
 $color-white-off-white: #f5f5f5;
 $color-magenta-light: #fe91fe;
 $color-blue-dark: #171a22;
+
+$white: $color-white;
 
 // Colors used for code highlighting
 $color-code-bg: $color-blue-dark;

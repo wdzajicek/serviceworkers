@@ -20,6 +20,9 @@
   text-transform: uppercase;
 }
 
+.h1--header--error {
+  margin-top: calc(10vh - 2rem);
+}
 
 .h2 {
   font-family: $font-family-main;

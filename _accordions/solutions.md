@@ -5,7 +5,7 @@ title: The Solution
 ---
 
 ## The Solution
-{: .h2.mb-4 }
+{: .h2.mb-4 id="solution" }
 
 To implement this idea I need to modify my `WebpackHashFilePlugin.js`{: .code} Webpack-plugin-file 
 to be able to create both the existing `_data/hash.yml`{: .code} file and create a new 

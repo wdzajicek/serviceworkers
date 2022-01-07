@@ -5,7 +5,7 @@ title: Project Dependencies
 ---
 
 ## Project Dependencies
-{: .h2 }
+{: .h2 id="dependencies" }
 
 ### Nodejs + Ruby
 {: .typography__h3 }

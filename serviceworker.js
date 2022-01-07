@@ -1,5 +1,7 @@
+// Install event creates a cache and populates it
 self.addEventListener('install', (event) => {
   event.waitUntil(
+    // `./hash.json` is an object containing Webpack's fullhash as the `hash` keys value
     fetch('/hash.json').then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -8,16 +10,19 @@ self.addEventListener('install', (event) => {
     })
     .then((obj) => {
       const hash = obj.hash;
-      console.log('Hash log 1: ' + hash);
+
       caches.open('v1').then((cache) => {
         return cache.addAll([
           './index.html',
           './404.html',
+          './assets/img/header-bg.jpg',
+          './favicon.ico',
           `./assets/js/dist/main.${hash}.js`,
           `./assets/js/dist/main.${hash}.css`,
           `./assets/js/dist/29.${hash}.js`,
           `./assets/js/dist/314.${hash}.js`,
           `./assets/js/dist/671.${hash}.js`,
+          `./assets/js/dist/676.${hash}.js`,
           `./assets/js/dist/909.${hash}.js`,
         ]);
       });
@@ -28,15 +33,34 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Fetch event serves resources from the cache first, or 
+// fetches it and adds it to the cache if it doesn't exist:
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((resp) => {
       return resp || fetch(event.request).then((response) => {
-        return caches.open('v1').then((cache) => {
-          cache.put(event.request, response.clone());
+        let responseClone = response.clone();
+
+        caches.open('v1').then((cache) => {
+          cache.put(event.request, responseClone);
           return response;
-        });
+        }).catch(err => console.error('Not found in cache and no network', err))
       });
     })
   );
 });
+
+// Activate event is used to delete old caches once a new service worker is activated:
+// self.addEventListener('activate', (event) => {
+//   const cacheKeeplist = ['v2']; // Array of cache versions to keep
+
+//   event.waitUntil(
+//     caches.keys().then((keyList) => {
+//       return Promise.all(keyList.map((key) => {
+//         if (cacheKeeplist.indexOf(key) === -1) {
+//           return caches.delete(key);
+//         }
+//       }));
+//     })
+//   );
+// });

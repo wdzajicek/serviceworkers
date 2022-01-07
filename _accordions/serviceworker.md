@@ -5,7 +5,7 @@ title: Creating the Service Worker
 ---
 
 ## Creating the Service Worker
-{: .h2.mb-4}
+{: .h2.mb-4 id="creating-service-worker"}
 
 <br>
 
@@ -138,9 +138,9 @@ function registerServiceWorker () {
 }
 
 export default registerServiceWorker;
-// End of module: registerServiceWorker.js
-// ================================================= //
+```
 
+```javascript
 // Main entrypoint for JS bundle:
 // File/location: `assets/js/src/main.js`
 
@@ -154,7 +154,7 @@ window.addEventListener('load', () => {
       .then(({ default: registerServiceWorker}) => registerServiceWorker())
       .catch((err) => console.error('Error loading module', err))
   }
-})
+});
 ```
 
 
@@ -175,7 +175,7 @@ the cache if it exists, otherwise make a regular network request:
 self.addEventListener('install', (event) => {
   // 2.) Use the `ExtendableEvent.waitUntil({ //... })` method to do some caching after installation:
   event.waitUntil(
-    // 3.) Open and give our cache a version name:
+    // 3.) Open a cache (or create if non-existing) and give it a version name:
     caches.open('v1').then((cache) => {
       // 4.) Use `cache.addAll([...])` method and pass it an array of 
       //     origin-relative URLs of the resources to cache:

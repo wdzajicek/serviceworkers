@@ -4,7 +4,7 @@ order: 4
 title: Challenges
 ---
 
-## Challenges
+## Service Workers Challenges
 {: .h2.mb-4}
 
 ```ruby
