@@ -1,0 +1,33 @@
+{
+  "pages": [
+    "/404.html",
+    "/",
+    "/robots.txt",
+    "/sheets-api/",
+    "/siteFiles.json",
+    "/sitemap.xml"
+    ],
+  "assets": [
+    "/assets/img/404.svg",
+    "/assets/img/404_sm.svg",
+    "/assets/img/header-bg.jpg",
+    "/assets/img/loader.min.svg",
+    "/assets/js/dist/189.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/25.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/29.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/314.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/579.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/58.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/584.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/636.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/671.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/676.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/839.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/909.8f32f3882f1595ee96b5.js",
+    "/assets/js/dist/main.8f32f3882f1595ee96b5.css",
+    "/assets/js/dist/main.8f32f3882f1595ee96b5.js",
+    "/favicon.ico",
+    "/hash.json",
+    "/serviceworker.js"
+    ]
+}

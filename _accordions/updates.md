@@ -5,7 +5,7 @@ title: Updating the App
 ---
 
 ## Updating the App (and the Service Worker)
-{: .h2.mb-4 id="creating-service-worker"}
+{: .h2.mb-4 id="updating-the-app"}
 
 <br>
 

@@ -60,8 +60,11 @@ hand off the hash, I decided I would go about the problem a little differently.
 
 I remembered from reading a lot of Service Worker documentation on MDN, that the Fetch API is among the allowed
 methods you can use from within a service worker&mdash;and that the synchronous `XMLHttpsRequest`{: .code} method 
-would not work. So, instead of trying to hand-off the hash to the service worker, I thought it would be simpler 
-to access the `hash.json`{: .code} file from the service worker context via `fetch()`{: .code}.
+would not work.
+{: .p}
+
+So, instead of trying to hand-off the hash from the registering JS, to its' service worker, I thought it would be simpler 
+to access a `./hash.json`{: .code} file from the service worker's own context via `WorkerGlobalScope.fetch()`{: .code}.
 {: .p}
 
 Adding a simple Fetch API call to the service worker's installation event is pretty simple:

@@ -8,26 +8,31 @@ title: The Solution
 {: .h2.mb-4 id="solution" }
 
 To implement this idea I need to modify my `WebpackHashFilePlugin.js`{: .code} Webpack-plugin-file 
-to be able to create both the existing `_data/hash.yml`{: .code} file and create a new 
-`hash.json`{: .code} file in a valid JSON format in addition.
+to be able to create both the existing `./_data/hash.yml`{: .code} file and a new 
+`./hash.json`{: .code} file in valid JSON format.
+{: .p}
+
+The `hash.json`{: .code} file, along with the Fetch API, will allow us access the bundle's hash from 
+within the service worker's scope. We can then use this hash to reconstruct the filenames for caching 
+in our&nbsp;app.
 {: .p}
 
 For this, I need to do the following modification to the plugins JS file:
 {: .p.mb-1}
 
-- Create another plugin option (with default setting) to specify a file-extension separate from the file-name: 
-  - This allow us to create either a JSON file and YAML file.
-- Modify the output file contents to create a valid JSON file if the extension is `json`{: .code}.
+- Create another plugin option (with a default setting) to specify a file-extension separate from the file-name: 
+  - This will allow us to create either a JSON or YAML file.
+- Modify the output file contents to create a valid JSON file (if the extension is `json`{: .code}).
 
-The [original plugin file](#the-original-webpackhashfilepluginjs-plugin-code) is shown above. It's pretty easy to figure out what is going on in the plugin 
+The [original plugin file](?id=cache-busting-with-webpack--jekyll#project-features) is shown above. It's pretty easy to figure out what is going on in the plugin 
 if your familiar with JS. Take a look at the file and my inline comments.
 {: .p}
 
 ### WebpackHashFilePlugin.js modifications
 {: .h3 }
 
-The modification needed to add the fileExtension option and JSON syntax support is shown below. Only the new lines 
-of code are not commented-out in the `WebpackHashFilePlugin.js`{: .code} file below:
+The modification needed to add the fileExtension option and JSON syntax support are shown below. Lines of code 
+that stay the same are commented-out via JS inline comments (`// Inline comment`{: .code}):
 {: .p}
 
 ```javascript
@@ -126,7 +131,8 @@ class WebpackHashFilePlugin {
 module.exports = WebpackHashFilePlugin;
 ```
 
-Next, our `webpack.config.js`{: .code} file needs to be updated with the new plugin options:
+Next, our `webpack.config.js`{: .code} file needs to be updated with the new plugin options. 
+We also need to create a second instance of the plugin in order to generate another hash file (i.e. `hash.json`{: .code}):
 {: .p}
 
 ```javascript

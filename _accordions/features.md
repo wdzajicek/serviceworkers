@@ -75,7 +75,7 @@ an `if`{:.code}-statement:
 
 ```javascript
 const MY_CONST = 'some important string.';
-const myRandomTest = (MY_CONST.search(/important\sstring\./g) != -1);
+const myRandomTest = (MY_CONST.search(/important\sstring\./g) !== -1);
 let param = undefined;
 
 if ( myRandomTest ) {
@@ -88,7 +88,7 @@ if ( myRandomTest ) {
 ```
 
 The modules' default function needs to be defined after the import. The shortest way to do this is
-inline with the `then()`{: .code} callback:
+inline with the `.then()`{: .code} callback of the import:
 {:.p}
 
 ```javascript
@@ -157,7 +157,7 @@ class WebpackHashFilePlugin{ // Class constructor
       const fileName = options.fileName; // String for the filename + extension (e.g. 'hash.yml').
       // 6. Uses Nodejs builtin `path` method to resolve the filename and location.
       const output = path.resolve(__dirname, outputPath, fileName);
-      // 7. Use the Nodejs builtin `fs.writeFile()` to create the file containing the bundle's hash.
+      // 7. Use the Nodejs builtin `fs.writeFile()` to write the hash file containing the bundle's hash.
       fs.writeFile(output, content, (err) => { // `fs.writeFile()` takes 3 params: path containing the filename/extension/location, contents, and an error callback-function
         if (err) {
           console.error(err)
@@ -179,7 +179,22 @@ files, it is guaranteed to be a new value, when any changes to the source files 
 **That makes Webpack's hash perfect for cache-busting purposes.**
 {: .p}
 
-We use this `hash.yml`{: .code} file for the following purposes:
+In the `./webpack.config.js`{: .code} file we can dynamically name files. In the 
+`config.output.filename`{: .code} setting, you can use `[fullhash]`{: .code} in the filename string (example below):
+{: .p}
+
+```javascript
+const config = {
+  output: {
+    filename: '[name].[fullhash].js',
+  },
+  // More configuration below...
+}
+
+module.exports = config;
+```
+
+We use a `hash.yml`{: .code} file with the hash as it's content to accomplish the following:
 {: .p.mb-1}
 
 - The YAML file is injected into `_data/hash.yml`{: .code}&mdash;**a Jekyll folder**&mdash;triggering the 
@@ -189,10 +204,12 @@ We use this `hash.yml`{: .code} file for the following purposes:
 - The hash is also built into any JS script or CSS link elements
   (via Jekyll's Liquid abilities and code similar to this: 
   `<link href="/dist/main.{% raw %}{{ site.data.hash }}{% endraw %}.css">`{: .code}): 
-  - This gives us cache-busting capabilities because any styling or JS changes will output a new hash which is built into 
-    new filenames.
-  - If the above link element used the hash `c1ffa09121e3327be06c`{: .code}it would become: 
-    `<link href="/dist/main.c1ffa09121e3327be06c.css">`{: .code}
+  - `{% raw %}{{ site.data.hash }}{% endraw %}`{: .code} allows us to access the contents of the hash file, since 
+    `./_data/`{: .code} is a Jekyll folder with a special purpose.
+  - Any styling or JS changes will output a new `./_data/hash.yml`{: .code} which is built into 
+    new files/filenames.
+  - If the above link element used the hash `c1ffa09121e3327be06c`{: .code}it would become: \
+    `<link href="/dist/main.c1ffa09121e3327be06c.css">`{: .code} in the HTML markup.
 
 To use the above original plugin file, you need to require the plugin and add some configuration options from within our `webpack.config.js`{: .code} file:
 {: .p}
@@ -231,12 +248,15 @@ module.exports = config;
   <div class="card-body px-4">
     <p class="p text-white"><strong>IMPORTANT:</strong> On your first build using the <code class="code">WebpackHashFilePlugin.js</code> plugin, 
     you may get an error saying that the hash file does not exist.</p>
-    <p class="p text-white mb-0">If this happens, simply create two empty hash files in the same locations that the hash files are built:
+    <p class="p text-white mb-0">If this happens, simply create two blank files in the same locations that the hash files will build:
       <ul class="text-white">
         <li><code class="code">_data/hash.yml</code></li>
         <li><code class="code">hash.json</code></li>
       </ul>
     </p>
     <p class="p text-white">Then, run another build.</p>
+    <p class="p text-white"><strong>Why do it this way?</strong> <br>It avoids giving the plugin unnecessary 
+    permissions. Giving file-write permission where it can be avoided is not a safe practice. Why open up 
+    potential vulnerabilities when you can avoid it?</p>
   </div>
 </div>

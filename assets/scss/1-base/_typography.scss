@@ -53,13 +53,34 @@ blockquote {
   border-left-color: $color-code-blue;
   border-left-width: .5rem;
   border-left-style: solid;
-  padding-left: 1rem;
+  padding-left: 2rem;
   padding-top: 1rem;
-  padding-right: .5rem;
+  padding-right: 1.5rem;
   padding-bottom: .25rem;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+  position: relative
+}
+
+blockquote p:first-child {
+  &::before {
+    color: rgba(0,0,0,.45);
+    content: '\201C';
+    font-size: 2.25rem;
+    position: absolute;
+    left: 1rem;
+    top: .5rem;
+  }
+  &::after {
+    color: rgba(0,0,0,.45);
+    content: '\201D';
+    font-size: 2.25rem;
+    line-height: 0;
+    position: relative;
+    top: .5rem;
+    left: .125rem;
+  }
 }
 
 .source {

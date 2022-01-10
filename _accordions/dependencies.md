@@ -10,7 +10,7 @@ title: Project Dependencies
 ### Nodejs + Ruby
 {: .typography__h3 }
 
-To run this project locally you will need a linux-like environment (I use a mac with Big Sur) with Nodejs v14 and Ruby-2.6.3. I use [Ruby Version Manager](https://rvm.io/) RVM and [Node Version Manager](https://github.com/nvm-sh/nvm) NVM to install and manage Ruby and Nodejs versions.
+To run this project locally you will need a linux-like environment (I use a mac with Big Sur) with Nodejs v14 and Ruby-2.6.3. I use [Ruby Version Manager](https://rvm.io/){: .links__launch target='_blank' rel='noopener noreferrer' } RVM and [Node Version Manager](https://github.com/nvm-sh/nvm){: .links__launch target='_blank' rel='noopener noreferrer' } NVM to install and manage Ruby and Nodejs versions.
 
 The project has an `.nvmrc`{: .code} file. If you want to use it, and have `cowsay`{: .code} installed (via Homebrew) add the following to your `.functions`{: .code} dotfile:
 
@@ -51,11 +51,20 @@ The `package.json`{: .code} file will download the `Webpack`{: .code}, `Babel`{:
 ### Running the builds
 {: .typography__h3 }
 
-The project has a development build and production build. Both use the `jekyll serve --livereload` command for jekyll, and the  `npx webpack` command for Webpack. These two command run in parallel by running either the `production` or `development`
-script. Use `npm run production` and `npm run development` to start the commands in parallel.
+The project has a development build and production build. Both use the `jekyll serve --livereload`{: .code} command for jekyll, and the  `npx webpack`{: .code} command for Webpack. These two command run in parallel by running either the `production`{: .code} or `development`{: .code} script. Use `npm run production`{: .code} and `npm run development`{: .code} to start the commands in parallel.
 
 When you are finished with previewing the build (navigate to `http://localhost:3000`{: .code} in you browser to preview,)
-use `control` + `c` (on the keyboard,) to stop the running commands. Both production and development builds watch for file changes and therefore the processes need to be stopped.
+use <kbd>control</kbd> + <kbd>C</kbd> to stop the running commands. Both production and development builds watch for file changes and therefore the processes need to be stopped.
 
-After changes are created in a development build, they should be tested and previewed in the production build. Use `npm run production` and navigate to `http://localhost:3000`{: .code} in your browser. Only an `npm run production` build should be
-used to commit changes to GitHub—**DON'T PUSH A DEVELOPMENT BUILD**.
+After changes are created in a development build, they should be tested and previewed in the production build. Use `npm run production`{: .code} and navigate to `http://localhost:3000`{: .code} in your browser. Only an `npm run production`{: .code} build should be used to commit changes to GitHub—**DON'T PUSH A DEVELOPMENT BUILD**.
+
+#### Development Build
+{: .typography__h4 }
+
+Using the dev-build `npm run development`{: .code} sets a production environment variable for Nodejs. The `webpack.config.js`{: .code} file checks for the variable and creates a development version of the bundled JS, and inline CSS that webpack injects into the document `<head>`{: .code} (with `<style>`{: .code} tags). The development bundles are easier to debug and read, and the inline-styling results in a faster development environment.
+
+#### Production Build
+{: .typography__h4 }
+
+The production build (`npm run production`{: .code}) creates a minified production version of the bundled JS and a separate 
+CSS file with the bundle's hash in its filename (`main.[fullhash].css`{: .code}.)

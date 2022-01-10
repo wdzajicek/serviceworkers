@@ -1,0 +1,1031 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Home | Service Workers</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content=""> -->
+
+  <!-- <link rel="manifest" href="site.webmanifest"> -->
+  <!-- <link rel="apple-touch-icon" href="icon.png"> -->
+  <!-- Place favicon.ico in the root directory -->
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/assets/js/dist/main.8f32f3882f1595ee96b5.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light nav--border-btm nav--fixed">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">WZ</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/sheets-api">Sheets API</a>
+        </li></ul></div>
+  </div>
+</nav>
+<header class="header">
+  <div class="header--bg">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <h1 class="h1--header text-center">Service Workers</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="container main--min-height py-4">
+  <div class="row">
+    <div class="col mt-3">
+      <h1 class="h1 mb-5" id="jamstack--service-workers">JAMstack + Service Workers</h1>
+
+<h2 class="h2 mb-4" id="contents">Contents</h2>
+
+<!-- no toc -->
+<ul>
+  <li><a href="#service-workers">Service Workers</a>
+    <ul>
+      <li><a href="#contents">Contents</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#project-dependencies">Project Dependencies</a></li>
+      <li><a href="#project-features">Project Features</a></li>
+      <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#the-solution">The Solution</a></li>
+      <li><a href="#creating-the-service-workers">Creating the Service Workers</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<div class="accordion" id="Homeaccordion">
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#overview" aria-expanded="true" aria-controls="overview">
+        Overview
+      </button>
+    </h2>
+    <div id="overview" class="accordion-collapse collapse show" aria-labelledby="overview">
+      <div class="accordion-body">
+        <h2 class="h2 mb-4" id="project-overview">Overview</h2>
+
+<p class="p">This project was developed for the purpose of implementing 
+<strong>service workers</strong>, and other PWA functionality, into a specific 
+<strong>JAMStack architecture</strong> that I use in web development at work.</p>
+
+<p class="p">Most JS documentation on service workers (or any other feature for that matter,) 
+only shows minimal examples of each feature or method—in a very piecemeal way—leaving 
+you to put it all together. instead, I wanted to provide a real-world example of 
+implementing service workers, and the challenges I faced.</p>
+
+<p class="p">The JAMStack architecture is a setup using <code class="language-plaintext code highlighter-rouge">Jekyll</code>, <code class="language-plaintext code highlighter-rouge">Nodejs</code>, 
+<code class="language-plaintext code highlighter-rouge">Webpack</code> + <code class="language-plaintext code highlighter-rouge">sass-loader</code> + <code class="language-plaintext code highlighter-rouge">Corejs</code> + <code class="language-plaintext code highlighter-rouge">Babel</code> +
+<code class="language-plaintext code highlighter-rouge">ES6</code> ,  <code class="language-plaintext code highlighter-rouge">SASS</code>, <code class="language-plaintext code highlighter-rouge">autoprefixer</code> etc.. This architecture 
+allows us to write and maintain a modular SASS setup for styling and ES6 which is 
+polyfilled and transpiled into JS with greater browser support.</p>
+
+<p class="p">The project is setup to use the babel presets defined in <code class="language-plaintext code highlighter-rouge">package.json</code> — specifically, 
+Corejs v3 with ES proposals. Browser support is defined in the <code class="language-plaintext code highlighter-rouge">"browserslist"</code>. 
+Because I need to support IE10+ at work, I let <code class="language-plaintext code highlighter-rouge">"useBuiltIns": "usage",</code> handle the polyfilling
+as opposed to importing individual polyfills where I use them.</p>
+
+<p class="p">Our build process is handled using npm-scripts (<code class="code mx-1 code__bash">npm run <span class="code--blue">&lt;SCRIPT_NAME&gt;</span></code> ) 
+and the npm package <code class="language-plaintext code highlighter-rouge">npm-run-all</code> which gives us the ability to run npm scripts sequentially and in-parallel.</p>
+
+<p class="p mb-1">Using <code class="language-plaintext code highlighter-rouge">npm-run-all</code> we are able to run our <strong>Jekyll command</strong> and <strong>Webpack commands</strong> in parallel:</p>
+
+<ul>
+  <li><strong>Jekyll</strong> handles the local sever with it’s <code class="language-plaintext code highlighter-rouge">--livereload</code> option and, of course, 
+compiles the static site files.</li>
+  <li><strong>Webpack</strong> handles transforming our Custom ES6 files into cross-browser JS, and compiles, 
+prefixes, and minifies custom SCSS into stylesheets.</li>
+</ul>
+
+<p class="p">We utilize our own custom Webpack plugin (built for Webpack 5) to generate a YAML file. <br />
+<em>This YAML file contains the <strong>hash of the main bundle</strong></em> (this is the same 
+hash—<code class="language-plaintext code highlighter-rouge">'[fullHash]'</code>—accessed inside a <code class="language-plaintext code highlighter-rouge">webpack.config.js</code> file using: 
+<code class="language-plaintext code highlighter-rouge">filename: '[name].[fullhash].js'</code>.)</p>
+
+<p class="p"><em>To be clear, when I use the word <strong>“hash”</strong> in this document, 
+I’m referring to the hash (i.e. the random looking string of characters) that Webpack 
+calculates from the files it consumed (e.g. <code class="language-plaintext code highlighter-rouge">c1ffa09121e3327be06c</code>.)</em></p>
+
+<p class="p">The two most important APIs used include <strong>Google Sheets</strong> and <strong>Google Docs</strong>. 
+I often use the Google Sheets API when I have content/information that updates 
+frequently. Instead of running an entire site-build to generate new HTML, the 
+Sheets API allows me to <em>“fetch”</em> new data (held in the spreadsheet) on-the-fly 
+as the user loads the page.</p>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#project-dependencies" aria-expanded="false" aria-controls="project-dependencies">
+        Project Dependencies
+      </button>
+    </h2>
+    <div id="project-dependencies" class="accordion-collapse collapse" aria-labelledby="project-dependencies">
+      <div class="accordion-body">
+        <h2 class="h2" id="dependencies">Project Dependencies</h2>
+
+<h3 class="typography__h3" id="nodejs--ruby">Nodejs + Ruby</h3>
+
+<p>To run this project locally you will need a linux-like environment (I use a mac with Big Sur) with Nodejs v14 and Ruby-2.6.3. I use <a href="https://rvm.io/" class="links__launch" target="_blank" rel="noopener noreferrer">Ruby Version Manager</a> RVM and <a href="https://github.com/nvm-sh/nvm" class="links__launch" target="_blank" rel="noopener noreferrer">Node Version Manager</a> NVM to install and manage Ruby and Nodejs versions.</p>
+
+<p>The project has an <code class="language-plaintext code highlighter-rouge">.nvmrc</code> file. If you want to use it, and have <code class="language-plaintext code highlighter-rouge">cowsay</code> installed (via Homebrew) add the following to your <code class="language-plaintext code highlighter-rouge">.functions</code> dotfile:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## Use a local .nvmrc file if present # from https://stackoverflow.com/a/48322289</span>
+enter_directory<span class="o">()</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$PWD</span> <span class="o">==</span> <span class="nv">$PREV_PWD</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    return
+  fi
+
+  </span><span class="nv">PREV_PWD</span><span class="o">=</span><span class="nv">$PWD</span>
+  <span class="o">[[</span> <span class="nt">-f</span> <span class="s2">".nvmrc"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> nvm use <span class="o">&gt;</span> /dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> nvm use | cowsay <span class="nv">$n</span>
+<span class="o">}</span>
+
+<span class="nb">export </span><span class="nv">PROMPT_COMMAND</span><span class="o">=</span>enter_directory
+</code></pre></div></div>
+
+<h4 class="typography__h4" id="jekyll">Jekyll</h4>
+
+<p>In addition to <code class="language-plaintext code highlighter-rouge">ruby-2.3.6</code> you will need to install Jekyll. See <a href="https://jekyllrb.com/docs/installation/">https://jekyllrb.com/docs/installation/</a> for the latest method of installation.</p>
+
+<h3 class="typography__h3" id="install-project-dependencies">Install Project Dependencies</h3>
+
+<p>To run the local build commands, you will need to install the projects npm and gem dependencies. Run the following commands
+to install them:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i <span class="o">&amp;&amp;</span> bundle i
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext code highlighter-rouge">package.json</code> file will download the <code class="language-plaintext code highlighter-rouge">Webpack</code>, <code class="language-plaintext code highlighter-rouge">Babel</code>, <code class="language-plaintext code highlighter-rouge">Corejs</code>, 
+<code class="language-plaintext code highlighter-rouge">Bootstrap</code> &amp; <code class="language-plaintext code highlighter-rouge">Popperjs</code>, <code class="language-plaintext code highlighter-rouge">colors</code> (for colorful console output,) and 
+<code class="language-plaintext code highlighter-rouge">npm-run-all</code> Nodejs dependencies. The <code class="language-plaintext code highlighter-rouge">Gemfile</code> installs <code class="language-plaintext code highlighter-rouge">jekyll v4</code> and 
+<code class="language-plaintext code highlighter-rouge">rouge v3.26</code> (for syntax highlighting.)</p>
+
+<h3 class="typography__h3" id="running-the-builds">Running the builds</h3>
+
+<p>The project has a development build and production build. Both use the <code class="language-plaintext code highlighter-rouge">jekyll serve --livereload</code> command for jekyll, and the  <code class="language-plaintext code highlighter-rouge">npx webpack</code> command for Webpack. These two command run in parallel by running either the <code class="language-plaintext code highlighter-rouge">production</code> or <code class="language-plaintext code highlighter-rouge">development</code> script. Use <code class="language-plaintext code highlighter-rouge">npm run production</code> and <code class="language-plaintext code highlighter-rouge">npm run development</code> to start the commands in parallel.</p>
+
+<p>When you are finished with previewing the build (navigate to <code class="language-plaintext code highlighter-rouge">http://localhost:3000</code> in you browser to preview,)
+use <kbd>control</kbd> + <kbd>C</kbd> to stop the running commands. Both production and development builds watch for file changes and therefore the processes need to be stopped.</p>
+
+<p>After changes are created in a development build, they should be tested and previewed in the production build. Use <code class="language-plaintext code highlighter-rouge">npm run production</code> and navigate to <code class="language-plaintext code highlighter-rouge">http://localhost:3000</code> in your browser. Only an <code class="language-plaintext code highlighter-rouge">npm run production</code> build should be used to commit changes to GitHub—<strong>DON’T PUSH A DEVELOPMENT BUILD</strong>.</p>
+
+<h4 class="typography__h4" id="development-build">Development Build</h4>
+
+<p>Using the dev-build <code class="language-plaintext code highlighter-rouge">npm run development</code> sets a production environment variable for Nodejs. The <code class="language-plaintext code highlighter-rouge">webpack.config.js</code> file checks for the variable and creates a development version of the bundled JS, and inline CSS that webpack injects into the document <code class="language-plaintext code highlighter-rouge">&lt;head&gt;</code> (with <code class="language-plaintext code highlighter-rouge">&lt;style&gt;</code> tags). The development bundles are easier to debug and read, and the inline-styling results in a faster development environment.</p>
+
+<h4 class="typography__h4" id="production-build">Production Build</h4>
+
+<p>The production build (<code class="language-plaintext code highlighter-rouge">npm run production</code>) creates a minified production version of the bundled JS and a separate 
+CSS file with the bundle’s hash in its filename (<code class="language-plaintext code highlighter-rouge">main.[fullhash].css</code>.)</p>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#project-features" aria-expanded="false" aria-controls="project-features">
+        Project Features
+      </button>
+    </h2>
+    <div id="project-features" class="accordion-collapse collapse" aria-labelledby="project-features">
+      <div class="accordion-body">
+        <h2 class="h2 mb-5" id="features">Project Features</h2>
+
+<p class="p">To follow along with this documentation it will help to know about some of its features. 
+The features discussed in this section are as follows:</p>
+
+<ul>
+  <li><a href="#es6-modules">ES6 Modules</a>:
+    <ul>
+      <li><a href="#exports">Exports</a></li>
+      <li><a href="#imports">Imports and dynamic imports</a></li>
+    </ul>
+  </li>
+  <li><a href="#cache-busting-with-webpack--jekyll">Cache Busting with Webpack + Jekyll</a></li>
+</ul>
+
+<p class="p">It is especially important to understand my custom Webpack 5 plugin <code class="language-plaintext code highlighter-rouge">WebpackHashFilePlugin.js</code> as
+this documentation addresses some the real-world challenges when trying to implement service workers.</p>
+
+<h3 class="h3 mb-3" id="es6-modules">ES6 Modules</h3>
+
+<h4 class="h4 mb-3" id="exports">Exports</h4>
+
+<p class="p mb-1">This project setup uses Webpack 5 to transpile and polyfill any custom ES6—the same setup I use at work. We use a specific  ES6 module-pattern to keep code organized, reusable, and easy to maintain. It uses ES6 modules:</p>
+<ul>
+  <li>A module should only export one function, (its <code class="language-plaintext code highlighter-rouge">export default &lt;myModulesMainFunction&gt;;</code>.)</li>
+  <li>All other functions are to be internal—they are defined and referenced only from within the module’s scope.</li>
+  <li>A module should contain code related to a single task, functionality, or solution. No unrelated code.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// If this module depends on other JS modules, add any static imports here:</span>
+<span class="k">import</span> <span class="nx">someFunction</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./someModule.js</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// Define variables available to this module's scope at the top:</span>
+<span class="kd">const</span> <span class="nx">SOME_IMPORTANT_CONSTANT</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">messing with me may break things.</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">someInternalTask</span><span class="p">(</span><span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Code related to this small task</span>
+  <span class="nx">someFunction</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">myDefaultExportFunction</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// More function calls and code for this module ...</span>
+  <span class="nx">someInternalTask</span><span class="p">(</span><span class="nx">SOME_IMPORTANT_CONSTANT</span><span class="p">);</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">myDefaultExportFunction</span><span class="p">;</span>
+</code></pre></div></div>
+<p class="p">If you have a very small/simple module you could also define the default export
+inline with the functions declaration like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">myDefaultExportFunction</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// More JS ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 class="h4 mb-3" id="imports">Imports</h4>
+
+<p class="p">The project is also capable of dynamic imports and lazy-loading of modules. <br />
+Static imports (<code class="language-plaintext code highlighter-rouge">import moduleName from './moduleName';</code>) must be at the top of any JS file.
+<strong>The ES6 <code class="language-plaintext code highlighter-rouge">import()</code> method, however, can be used anywhere</strong>—even inside 
+an <code class="language-plaintext code highlighter-rouge">if</code>-statement:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">MY_CONST</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">some important string.</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">myRandomTest</span> <span class="o">=</span> <span class="p">(</span><span class="nx">MY_CONST</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="sr">/important</span><span class="se">\s</span><span class="sr">string</span><span class="se">\.</span><span class="sr">/g</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">param</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="nx">myRandomTest</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./myModule</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">module</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">defaultFunction</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="k">default</span><span class="p">;</span> <span class="c1">// Define the modules default func</span>
+
+    <span class="nx">defaultFunction</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p class="p">The modules’ default function needs to be defined after the import. The shortest way to do this is
+inline with the <code class="language-plaintext code highlighter-rouge">.then()</code> callback of the import:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">load</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./myModule</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">(({</span><span class="na">default</span><span class="p">:</span> <span class="nx">defaultFn</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="c1">// Much more concise</span>
+    <span class="c1">// More code ...</span>
+    <span class="nx">defaultFn</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="card bg-info">
+  <div class="card-header px-4">
+    <h5 class="h5">Important Information</h5>
+  </div>
+  <div class="card-body px-4">
+    <p class="p--darker">
+      <strong>NOTE:</strong> You cannot mix different module syntaxes (i.e. 
+      <code class="code">CommonJS</code> + <code class="code">ES6</code> modules.)
+    </p>
+    <p class="p--darker">
+      If you want to use <code class="code">CommonJS</code>, or some other module sytax, you
+      will need to change all the export/import statements for the bundle entrypoint file 
+      and it's module dependencies.
+    </p>
+    <p class="p--darker">Do not deviate from the ES6 module syntax, or try
+    to export multiple functions from a single module, or Webpack may throw an error and exit the build command.</p>
+  </div>
+</div>
+
+<p><br /></p>
+
+<h3 class="h3" id="cache-busting-with-webpack--jekyll">Cache Busting with Webpack + Jekyll</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Custom Webpack plugin to output the hash into a file.</span>
+<span class="c1">// Filename/location: `./builtools/WebpackHashFilePlugin.js`</span>
+ 
+<span class="c1">// 1.) Require any dependencies here:</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// Built into Nodejs - no installation needed</span>
+<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// Built into Nodejs - no installation needed</span>
+
+<span class="c1">// 2.) Create the plugins' class constructor and default options:</span>
+<span class="c1">// Webpack 5 plugins require a class method with a constructor and options for setting defaults</span>
+<span class="kd">class</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">{</span> <span class="c1">// Class constructor</span>
+  <span class="kd">constructor</span> <span class="p">(</span><span class="nx">options</span><span class="p">){</span>
+    <span class="c1">// 3.) Assign some default options which can be overridden when the plugin is initiated.</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../_data.yml</span><span class="dl">'</span>
+    <span class="p">},</span> <span class="nx">options</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 3.) The Webpack plugins' class needs an `apply(compiler)` method to hook into the `compiler`</span>
+  <span class="nx">apply</span><span class="p">(</span><span class="nx">compiler</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">;</span>
+    <span class="c1">// 4.) Here we add a 'hook' to 'tap' into the webpack-compiler's `stats` object. Pretty standard Webpack plugin code.</span>
+    <span class="nx">compiler</span><span class="p">.</span><span class="nx">hooks</span><span class="p">.</span><span class="nx">done</span><span class="p">.</span><span class="nx">tap</span><span class="p">(</span><span class="dl">"</span><span class="s2">WebpackHashFilePlugin</span><span class="dl">"</span><span class="p">,</span> <span class="nx">stats</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 5.) Setup some variables for accessing the plugins' options.</span>
+      <span class="kd">const</span> <span class="nx">content</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span> <span class="c1">// The string held within this `const` will become the contents of the written file.</span>
+      <span class="kd">const</span> <span class="nx">outputPath</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span> <span class="c1">// String representing the path to create the file (relative to plugin files' location, e.g. '../data/`.)</span>
+      <span class="kd">const</span> <span class="nx">fileName</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fileName</span><span class="p">;</span> <span class="c1">// String for the filename + extension (e.g. 'hash.yml').</span>
+      <span class="c1">// 6. Uses Nodejs builtin `path` method to resolve the filename and location.</span>
+      <span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="nx">outputPath</span><span class="p">,</span> <span class="nx">fileName</span><span class="p">);</span>
+      <span class="c1">// 7. Use the Nodejs builtin `fs.writeFile()` to write the hash file containing the bundle's hash.</span>
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="nx">output</span><span class="p">,</span> <span class="nx">content</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="c1">// `fs.writeFile()` takes 3 params: path containing the filename/extension/location, contents, and an error callback-function</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+          <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="c1">// Log some info if the file is written successfully</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Plugin: {WebpackHashFilePlugin} created: </span><span class="p">${</span><span class="nx">output</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Hash: </span><span class="p">${</span><span class="nx">content</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+      <span class="p">});</span>
+   <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="c1">// 8.) Export the plugins class</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p">Because the hash is calculated from the bundle’s 
+files, it is guaranteed to be a new value, when any changes to the source files are made.
+<strong>That makes Webpack’s hash perfect for cache-busting purposes.</strong></p>
+
+<p class="p">In the <code class="language-plaintext code highlighter-rouge">./webpack.config.js</code> file we can dynamically name files. In the 
+<code class="language-plaintext code highlighter-rouge">config.output.filename</code> setting, you can use <code class="language-plaintext code highlighter-rouge">[fullhash]</code> in the filename string (example below):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">[name].[fullhash].js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="c1">// More configuration below...</span>
+<span class="p">}</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p mb-1">We use a <code class="language-plaintext code highlighter-rouge">hash.yml</code> file with the hash as it’s content to accomplish the following:</p>
+
+<ul>
+  <li>The YAML file is injected into <code class="language-plaintext code highlighter-rouge">_data/hash.yml</code>—<strong>a Jekyll folder</strong>—triggering the 
+Jekyll-build to update:
+    <ul>
+      <li>This causes Jekyll to copy any changes in the <code class="language-plaintext code highlighter-rouge">./assets/*</code> folder and subfolders into the site build.</li>
+      <li>This also causes the local server to update via Jekyll’s livereload.</li>
+    </ul>
+  </li>
+  <li>The hash is also built into any JS script or CSS link elements
+(via Jekyll’s Liquid abilities and code similar to this: 
+<code class="language-plaintext code highlighter-rouge">&lt;link href="/dist/main.{{ site.data.hash }}.css"&gt;</code>):
+    <ul>
+      <li><code class="language-plaintext code highlighter-rouge">{{ site.data.hash }}</code> allows us to access the contents of the hash file, since 
+<code class="language-plaintext code highlighter-rouge">./_data/</code> is a Jekyll folder with a special purpose.</li>
+      <li>Any styling or JS changes will output a new <code class="language-plaintext code highlighter-rouge">./_data/hash.yml</code> which is built into 
+new files/filenames.</li>
+      <li>If the above link element used the hash <code class="language-plaintext code highlighter-rouge">c1ffa09121e3327be06c</code>it would become: <br />
+<code class="language-plaintext code highlighter-rouge">&lt;link href="/dist/main.c1ffa09121e3327be06c.css"&gt;</code> in the HTML markup.</li>
+    </ul>
+  </li>
+</ul>
+
+<p class="p">To use the above original plugin file, you need to require the plugin and add some configuration options from within our <code class="language-plaintext code highlighter-rouge">webpack.config.js</code> file:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Filename/location: `./webpack.config.js` file for Webpack v5</span>
+<span class="c1">// 1.) Require the plugin:</span>
+<span class="kd">const</span> <span class="nx">WebpackHashFilePlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./buildtools/WebpackHashFilePlugin</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// Our custom plugin found in `/buildtools`</span>
+
+<span class="c1">// 2.) Add the plugin to your plugins array:</span>
+<span class="kd">const</span> <span class="nx">plugins</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="k">new</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">({</span> <span class="c1">// Initialize our custom plugin</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../_data/</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>    <span class="c1">// Remove the '.yml' extension from fileName.</span>
+    <span class="na">fileExtension</span><span class="p">:</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span> <span class="c1">// Add a fileExtension option</span>
+  <span class="p">}),</span>
+<span class="p">];</span>
+
+<span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plugins</span><span class="p">,</span> <span class="c1">// 3.) Reference the plugins array in the config</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">main</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./assets/js/src/main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="c1">// More Webpack configuration code here ...</span>
+<span class="p">}</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="card bg-danger text-white mx-md-5">
+  <div class="card-header px-4">
+    <h5 class="h5">Important</h5>
+  </div>
+  <div class="card-body px-4">
+    <p class="p text-white"><strong>IMPORTANT:</strong> On your first build using the <code class="code">WebpackHashFilePlugin.js</code> plugin, 
+    you may get an error saying that the hash file does not exist.</p>
+    <p class="p text-white mb-0">If this happens, simply create two blank files in the same locations that the hash files will build:
+      <ul class="text-white">
+        <li><code class="code">_data/hash.yml</code></li>
+        <li><code class="code">hash.json</code></li>
+      </ul>
+    </p>
+    <p class="p text-white">Then, run another build.</p>
+    <p class="p text-white"><strong>Why do it this way?</strong> <br />It avoids giving the plugin unnecessary 
+    permissions. Giving file-write permission where it can be avoided is not a safe practice. Why open up 
+    potential vulnerabilities when you can avoid it?</p>
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenges" aria-expanded="false" aria-controls="challenges">
+        Challenges
+      </button>
+    </h2>
+    <div id="challenges" class="accordion-collapse collapse" aria-labelledby="challenges">
+      <div class="accordion-body">
+        <h2 class="h2 mb-4" id="service-workers-challenges">Service Workers Challenges</h2>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">serviceworkers</span><span class="o">/</span>
+      <span class="o">|</span><span class="n">__</span> <span class="n">assets</span><span class="o">/</span>
+      <span class="o">|</span>     <span class="o">|</span><span class="n">__</span> <span class="n">js</span><span class="o">/</span>
+      <span class="o">|</span>         <span class="o">|</span><span class="n">__</span> <span class="n">dist</span><span class="o">/</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|--</span> <span class="mi">29</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|--</span> <span class="mi">314</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|--</span> <span class="mi">671</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|--</span> <span class="mi">909</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|--</span> <span class="n">main</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">css</span>
+      <span class="o">|</span>         <span class="o">|</span>     <span class="o">|</span><span class="n">__</span> <span class="n">main</span><span class="p">.</span><span class="nf">c1ffa09121e3327be06c</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>         <span class="o">|</span>
+      <span class="o">|</span>         <span class="o">|</span><span class="n">__</span> <span class="n">src</span><span class="o">/</span>
+      <span class="o">|</span>              <span class="o">|--</span> <span class="n">main</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>              <span class="o">|</span><span class="n">__</span> <span class="n">registerServiceWorker</span><span class="p">.</span><span class="nf">js</span>
+      <span class="o">|</span>
+      <span class="o">|</span><span class="n">__</span> <span class="n">serviceworkers</span><span class="p">.</span><span class="nf">js</span>
+</code></pre></div></div>
+
+<p class="p">As you can see above, our cache-busting mechanism (using a random hash in JS and CSS filenames,) makes it a little challenging 
+to cache those assets in a service worker. To cache the files in the service worker, we need the filenames and path—our filenames are not predictable. So I needed to find a way to pass 
+the hash created by Webpack to the service worker.</p>
+
+<p class="p">My initial idea was to use the <code class="language-plaintext code highlighter-rouge">navigator.serviceWorker.controller.postMessage()</code> 
+method to send the hash to the service worker. I would first need to get the bundle’s hash into my custom JS file (and then 
+hand it of to the service worker via <code class="language-plaintext code highlighter-rouge">postMessage()</code>.) Instead of creating another solution, I decided to 
+utilize my existing custom Webpack plugin.</p>
+
+<p class="p">I would need to modify the Webpack plugin to be able to output two different files—one for the existing <code class="language-plaintext code highlighter-rouge">_includes/hash.yml</code>
+file, and the second to create a new <code class="language-plaintext code highlighter-rouge">hash.json</code> file.</p>
+
+<p class="p">I could then access this <code class="language-plaintext code highlighter-rouge">hash.json</code> file from within my custom JS file that 
+registers/installs the service worker. This, I thought, would allow me to send the hash
+to the service worker using the <code class="language-plaintext code highlighter-rouge">postMessage()</code> method.</p>
+
+<p class="p">After much difficulty trying to get the <code class="language-plaintext code highlighter-rouge">navigator.serviceWorker.controller.postMessage()</code> method to 
+hand off the hash, I decided I would go about the problem a little differently.</p>
+
+<blockquote>
+  <p>For making a request and fetching a resource, use the fetch() method. 
+It is implemented in multiple interfaces, specifically Window and WorkerGlobalScope. 
+This makes it available in pretty much any context you might want to fetch resources in.</p>
+
+  <p><span class="source">Source: <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#concepts_and_usage" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API#concepts_and_usage</a></span></p>
+</blockquote>
+
+<p class="p">I remembered from reading a lot of Service Worker documentation on MDN, that the Fetch API is among the allowed
+methods you can use from within a service worker—and that the synchronous <code class="language-plaintext code highlighter-rouge">XMLHttpsRequest</code> method 
+would not work.</p>
+
+<p class="p">So, instead of trying to hand-off the hash from the registering JS, to its’ service worker, I thought it would be simpler 
+to access a <code class="language-plaintext code highlighter-rouge">./hash.json</code> file from the service worker’s own context via <code class="language-plaintext code highlighter-rouge">WorkerGlobalScope.fetch()</code>.</p>
+
+<p class="p">Adding a simple Fetch API call to the service worker’s installation event is pretty simple:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/hash.json</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`HTTP error! status: </span><span class="p">${</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">((</span><span class="nx">json</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span> <span class="c1">// The hash is stored under the JSON object's hash key</span>
+
+  <span class="c1">// Use the Webpack hash here</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
+  <span class="c1">// Expected logged result: 'c1ffa09121e3327be06c' (or similar random string of the same length)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#the-solution" aria-expanded="false" aria-controls="the-solution">
+        The Solution
+      </button>
+    </h2>
+    <div id="the-solution" class="accordion-collapse collapse" aria-labelledby="the-solution">
+      <div class="accordion-body">
+        <h2 class="h2 mb-4" id="solution">The Solution</h2>
+
+<p class="p">To implement this idea I need to modify my <code class="language-plaintext code highlighter-rouge">WebpackHashFilePlugin.js</code> Webpack-plugin-file 
+to be able to create both the existing <code class="language-plaintext code highlighter-rouge">./_data/hash.yml</code> file and a new 
+<code class="language-plaintext code highlighter-rouge">./hash.json</code> file in valid JSON format.</p>
+
+<p class="p">The <code class="language-plaintext code highlighter-rouge">hash.json</code> file, along with the Fetch API, will allow us access the bundle’s hash from 
+within the service worker’s scope. We can then use this hash to reconstruct the filenames for caching 
+in our app.</p>
+
+<p class="p mb-1">For this, I need to do the following modification to the plugins JS file:</p>
+
+<ul>
+  <li>Create another plugin option (with a default setting) to specify a file-extension separate from the file-name:
+    <ul>
+      <li>This will allow us to create either a JSON or YAML file.</li>
+    </ul>
+  </li>
+  <li>Modify the output file contents to create a valid JSON file (if the extension is <code class="language-plaintext code highlighter-rouge">json</code>).</li>
+</ul>
+
+<p class="p">The <a href="?id=cache-busting-with-webpack--jekyll#project-features">original plugin file</a> is shown above. It’s pretty easy to figure out what is going on in the plugin 
+if your familiar with JS. Take a look at the file and my inline comments.</p>
+
+<h3 class="h3" id="webpackhashfilepluginjs-modifications">WebpackHashFilePlugin.js modifications</h3>
+
+<p class="p">The modification needed to add the fileExtension option and JSON syntax support are shown below. Lines of code 
+that stay the same are commented-out via JS inline comments (<code class="language-plaintext code highlighter-rouge">// Inline comment</code>):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// class WebpackHashFilePlugin{</span>
+<span class="c1">//    constructor (options){</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="p">{</span>
+          <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../_data</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// Remove the file-extension from path</span>
+          <span class="na">fileExtension</span><span class="p">:</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span> <span class="c1">// Add a `fileExtension` key with a value set to the file's extension (e.g. 'yml')</span>
+       <span class="p">},</span> <span class="nx">options</span><span class="p">)</span>
+<span class="c1">//   }</span>
+
+<span class="c1">//  apply(compiler) {</span>
+<span class="c1">//    const options = this.options;</span>
+<span class="c1">//    compiler.hooks.done.tap("WebpackHashFilePlugin", stats =&gt; {</span>
+
+      <span class="kd">let</span> <span class="nx">content</span><span class="p">;</span> <span class="c1">// Define content as an undefined `let` instead of a `const`.</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">json</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// If the `fileExtension` option is set to 'json' ...</span>
+        <span class="nx">content</span> <span class="o">=</span> <span class="s2">`{\n  "hash": "</span><span class="p">${</span><span class="nx">stats</span><span class="p">.</span><span class="nx">hash</span><span class="p">}</span><span class="s2">"\n}`</span><span class="p">;</span> <span class="c1">// ... Wrap the hash in an object with a `"hash"` key set to the hash.</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// If the `fileExtension` option is 'yml' ...</span>
+        <span class="nx">content</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span> <span class="c1">// ... Set the file contents to the hash itself.</span>
+      <span class="p">}</span>
+
+<span class="c1">//    const outputPath = options.path;</span>
+<span class="c1">//    const fileName = options.fileName;</span>
+      <span class="kd">const</span> <span class="nx">extension</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="nx">outputPath</span><span class="p">,</span> <span class="s2">`</span><span class="p">${</span><span class="nx">fileName</span><span class="p">}</span><span class="s2">.</span><span class="p">${</span><span class="nx">extension</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span> <span class="c1">// Add the fileExtension - `${fileName}.${extension}`</span>
+<span class="c1">//    fs.writeFile(output, content, (err) =&gt; {</span>
+<span class="c1">//      if (err) {</span>
+<span class="c1">//        console.error(err)</span>
+<span class="c1">//        return</span>
+<span class="c1">//      }</span>
+        <span class="c1">// File written successfully</span>
+<span class="c1">//      console.log(`Plugin: {WebpackHashFilePlugin} created ${output}`);</span>
+<span class="c1">//      console.log(`Hash: ${content}`);</span>
+<span class="c1">//      });</span>
+<span class="c1">//   });</span>
+<span class="c1">//  }</span>
+<span class="c1">// };</span>
+
+<span class="c1">// module.exports = WebpackHashFilePlugin;</span>
+</code></pre></div></div>
+
+<p class="p">The entire plugin file should look like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// File: `./buildtools/WebpackHashFilePlugin.js`</span>
+<span class="c1">// Save this file in the project's `./buildtools/` directory as `WebpackHashFilePlugin.js`</span>
+
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">class</span> <span class="nx">WebpackHashFilePlugin</span> <span class="p">{</span>
+  <span class="kd">constructor</span> <span class="p">(</span><span class="nx">options</span><span class="p">){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../_data</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">fileExtension</span><span class="p">:</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span>
+   <span class="p">},</span> <span class="nx">options</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">apply</span><span class="p">(</span><span class="nx">compiler</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">;</span>
+    
+    <span class="nx">compiler</span><span class="p">.</span><span class="nx">hooks</span><span class="p">.</span><span class="nx">done</span><span class="p">.</span><span class="nx">tap</span><span class="p">(</span><span class="dl">"</span><span class="s2">WebpackHashFilePlugin</span><span class="dl">"</span><span class="p">,</span> <span class="nx">stats</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">let</span> <span class="nx">content</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">json</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">content</span> <span class="o">=</span> <span class="s2">`{\n  "hash": "</span><span class="p">${</span><span class="nx">stats</span><span class="p">.</span><span class="nx">hash</span><span class="p">}</span><span class="s2">"\n}`</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">content</span> <span class="o">=</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="kd">const</span> <span class="nx">outputPath</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">fileName</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fileName</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">extension</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fileExtension</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="nx">outputPath</span><span class="p">,</span> <span class="s2">`</span><span class="p">${</span><span class="nx">fileName</span><span class="p">}</span><span class="s2">.</span><span class="p">${</span><span class="nx">extension</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+      
+      <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="nx">output</span><span class="p">,</span> <span class="nx">content</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+          <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Plugin: {WebpackHashFilePlugin} created </span><span class="p">${</span><span class="nx">output</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Hash: </span><span class="p">${</span><span class="nx">content</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p">Next, our <code class="language-plaintext code highlighter-rouge">webpack.config.js</code> file needs to be updated with the new plugin options. 
+We also need to create a second instance of the plugin in order to generate another hash file (i.e. <code class="language-plaintext code highlighter-rouge">hash.json</code>):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Filename/location: `./webpack.config.js` file for Webpack v5</span>
+<span class="c1">// 1.) Require the plugin:</span>
+<span class="kd">const</span> <span class="nx">WebpackHashFilePlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./buildtools/WebpackHashFilePlugin</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// Our custom plugin found in `/buildtools`</span>
+
+<span class="c1">// 2.) Add the plugin to your plugins array:</span>
+<span class="kd">const</span> <span class="nx">plugins</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="k">new</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">({</span> <span class="c1">// One instance of the plugin for the YAML file</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../_data/</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>    <span class="c1">// Remove the '.yml' extension from fileName.</span>
+    <span class="na">fileExtension</span><span class="p">:</span> <span class="dl">'</span><span class="s1">yml</span><span class="dl">'</span> <span class="c1">// Add a fileExtension option</span>
+  <span class="p">}),</span>
+  <span class="k">new</span> <span class="nx">WebpackHashFilePlugin</span><span class="p">({</span> <span class="c1">// Another instance of the plugin for the JSON file</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">../</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">fileName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hash</span><span class="dl">'</span><span class="p">,</span>     <span class="c1">// Remove the '.yml' extension from fileName.</span>
+    <span class="na">fileExtension</span><span class="p">:</span> <span class="dl">'</span><span class="s1">json</span><span class="dl">'</span> <span class="c1">// Add a fileExtension option</span>
+  <span class="p">}),</span>
+<span class="p">];</span>
+
+<span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plugins</span><span class="p">,</span> <span class="c1">// 3.) Reference the plugins array in the config</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">main</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./assets/js/src/main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="c1">// More Webpack configuration code here ...</span>
+<span class="p">}</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p">Now we can create a service worker JS file, and an ES6 module, to cache network calls.</p>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#creating-the-service-worker" aria-expanded="false" aria-controls="creating-the-service-worker">
+        Creating the Service Worker
+      </button>
+    </h2>
+    <div id="creating-the-service-worker" class="accordion-collapse collapse" aria-labelledby="creating-the-service-worker">
+      <div class="accordion-body">
+        <h2 class="h2 mb-4" id="service-worker">Creating the Service Worker</h2>
+
+<p><br /></p>
+
+<p class="p mb-4">Now let’s dig into the details of creating our service worker, registering and installing them, and caching assets.</p>
+
+<p><br /></p>
+
+<h3 class="h3 mb-4" id="registerserviceworkerjs-module"><code class="language-plaintext code highlighter-rouge">registerServiceWorker.js</code> Module</h3>
+
+<p class="p">To create the code that will register our service worker, I created a new JS file named <code class="language-plaintext code highlighter-rouge">registerServiceWorker.js</code>. I created a default export function with the same name as the module filename (i.e. <code class="language-plaintext code highlighter-rouge">function registerServiceWorker()</code>):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">registerServiceWorker</span> <span class="p">()</span> <span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">registerServiceWorker</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p">Let’s use this module to register our service worker which will be named <code class="language-plaintext code highlighter-rouge">./serviceworker.js</code>, 
+and will be located in the project’s root. When registering a service worker you also define it’s scope. It’s 
+scope is simply where, within the websites directory structure, the worker is allowed to operate.</p>
+
+<p class="p"><strong>The service worker has to be in the project’s root so that its’ scope can
+include all the files hosted from the site’s origin.</strong> If the service worker’s JS file were within a subfolder, 
+the worker’s scope would be limited to that directory (and it’s subdirectories.)</p>
+
+<p class="p">To do the registration we need to use the <br />
+<code class="language-plaintext code highlighter-rouge">navigator.serviceWorker.register('./&lt;SERVICE_WORKER_FILE&gt;.js', { scope: './' })</code> method, 
+where the first parameter is the service worker’s filename/location. The second (optional) parameter is an 
+object used to configure the worker’s scope.</p>
+
+<p class="p"><strong>Be sure to ues any <code class="language-plaintext code highlighter-rouge">serviceWorker</code> methods inside a check for service worker/browser compatibility.</strong>
+That way we won’t break the website for user’s who don’t have service worker support in their browser. This also 
+helps our website adhere to the progressive web app (PWA) philosophy of <strong>progressive enhancement</strong>. Users who
+can support modern features (like service workers) will be able to utilize those feature which then <em>enhance</em> their experience—all while ensuring that the underlying functionality is available to as many as possible.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// File: `./assets/js/src/registerServiceWorker.js`</span>
+
+<span class="kd">function</span> <span class="nx">registerServiceWorker</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// 1.) Check if the browser supports service worker:</span>
+  <span class="k">if</span> <span class="p">(</span><span class="dl">'</span><span class="s1">serviceWorker</span><span class="dl">'</span> <span class="k">in</span> <span class="nb">navigator</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 2. Register the worker:</span>
+    <span class="c1">// We can omit the optional scope parameter, it will default to a scope matching the worker's parent folder (and any sub-folders.)</span>
+    <span class="nb">navigator</span><span class="p">.</span><span class="nx">serviceWorker</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="dl">'</span><span class="s1">./serviceworker.js</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">reg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// registration worked</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Registration succeeded. Scope is </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">reg</span><span class="p">.</span><span class="nx">scope</span><span class="p">);</span>
+    <span class="p">}).</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// registration failed</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Registration failed with </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">registerServiceWorker</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p class="p">Internally, service workers use Promises. This means we can tack on <code class="language-plaintext code highlighter-rouge">.then()</code> and <code class="language-plaintext code highlighter-rouge">.catch()</code> callbacks to 
+run code after registration is successful and/or after an error.</p>
+
+<p class="p">The last thing to do is import this module into the bundle’s entrypoint (<code class="language-plaintext code highlighter-rouge">/assets/js/src/main/js</code>.) Remember that 
+service workers are not executed on the main JS thread, they run in the background on their own thread:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// File/location: `assets/js/src/main.js`</span>
+<span class="k">import</span> <span class="dl">'</span><span class="s1">../../scss/main.scss</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">DOMContentLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Do not run service workers (or our module) inside of a 'DOMContentLoaded' listener!!</span>
+  <span class="c1">// Essential JS ...</span>
+<span class="p">});</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">load</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Load the service worker's module after page load with the ES6 `import()` method.</span>
+  <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./registerServiceWorker</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span> <span class="p">({</span><span class="na">default</span><span class="p">:</span> <span class="nx">registerServiceWorker</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">registerServiceWorker</span><span class="p">()</span> <span class="p">)</span> <span class="c1">// Define modules' default and execute right away</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error loading module</span><span class="dl">'</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span> <span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p class="p">If we wanted to be a little more clever, we could check for service worker compatibility before we ever import the module.
+To do this, just remove the service worker check from <code class="language-plaintext code highlighter-rouge">./registerServiceWorker.js</code>, and add it into <code class="language-plaintext code highlighter-rouge">./main.js</code>, before we use the ES6 import:</p>
+
+<p><br /></p>
+
+<div class="card bg-info">
+  <div class="card-header px-4">
+    <h5 class="h5">Important Information</h5>
+  </div>
+  <div class="card-body px-4">
+    <p class="p--darker"><strong>NOTE:</strong> The code block below shows edits on two files:
+      <ul>
+        <li><code class="code">registerServiceWorker.js</code></li>
+        <li><code class="code">main.js</code></li>
+      </ul>
+      </p>
+  </div>
+</div>
+
+<p><br /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Module that registers the service worker:</span>
+<span class="c1">// File/location: `assets/js/src/registerServiceWorker.js`</span>
+
+<span class="kd">function</span> <span class="nx">registerServiceWorker</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// Removed the: `if ( 'serviceWorker' in navigator )` check.</span>
+  <span class="nb">navigator</span><span class="p">.</span><span class="nx">serviceWorker</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="dl">'</span><span class="s1">./serviceworker.js</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">reg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// registration worked</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Registration succeeded. Scope is </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">reg</span><span class="p">.</span><span class="nx">scope</span><span class="p">);</span>
+  <span class="p">}).</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// registration failed</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Registration failed with </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">registerServiceWorker</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Main entrypoint for JS bundle:</span>
+<span class="c1">// File/location: `assets/js/src/main.js`</span>
+
+<span class="k">import</span> <span class="dl">'</span><span class="s1">../../scss/main.scss</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">load</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Check for service worker compatibility so that users who don't need it...</span>
+  <span class="c1">// won't unnecessarily import the module.</span>
+  <span class="k">if</span> <span class="p">(</span><span class="dl">'</span><span class="s1">serviceWorker</span><span class="dl">'</span> <span class="k">in</span> <span class="nb">navigator</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./registerServiceWorker</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">(({</span> <span class="na">default</span><span class="p">:</span> <span class="nx">registerServiceWorker</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">registerServiceWorker</span><span class="p">())</span>
+      <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error loading module</span><span class="dl">'</span><span class="p">,</span> <span class="nx">err</span><span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 class="h3" id="serviceworkerjs-file"><code class="language-plaintext code highlighter-rouge">./serviceworker.js</code> File</h3>
+
+<p class="p">Finally, we can create our service worker file in the projects root. Let’s create a basic service worker
+setup with an <code class="language-plaintext code highlighter-rouge">oninstall</code> handler to cache files and an <code class="language-plaintext code highlighter-rouge">onfetch</code> handler to return network requests from 
+the cache if it exists, otherwise make a regular network request:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1.) Create an event listener for the install event:</span>
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">install</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 2.) Use the `ExtendableEvent.waitUntil({ //... })` method to do some caching after installation:</span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span>
+    <span class="c1">// 3.) Open a cache (or create if non-existing) and give it a version name:</span>
+    <span class="nx">caches</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 4.) Use `cache.addAll([...])` method and pass it an array of </span>
+      <span class="c1">//     origin-relative URLs of the resources to cache:</span>
+      <span class="k">return</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span>
+        <span class="dl">'</span><span class="s1">./index.html</span><span class="dl">'</span><span class="p">,</span>
+        <span class="dl">'</span><span class="s1">./404.html</span><span class="dl">'</span><span class="p">,</span>
+        <span class="dl">'</span><span class="s1">./sitemap.xml</span><span class="dl">'</span>
+        <span class="c1">// More items to cache ...</span>
+      <span class="p">]);</span>
+    <span class="p">});</span>
+  <span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// 6.) Create a fetch event-listener to intercept any network requests:</span>
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">fetch</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 7.) Use `events.responsdWith()` to "hijack" the network requests</span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">respondWith</span><span class="p">(</span>
+    <span class="c1">// 8.) Check the cache for a key matching the request</span>
+    <span class="nx">caches</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">resp</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 9.) Return the cached item if it exists, otherwise use a normal fetch() call to get the request from the network</span>
+      <span class="k">return</span> <span class="nx">resp</span> <span class="o">||</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// 10.) After a fetch() call, for any items not in the cache, open the cache and add the missing item</span>
+        <span class="k">return</span> <span class="nx">caches</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">cache</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">clone</span><span class="p">());</span>
+          <span class="c1">// 11.) Finally, hand off the response to be used by the document</span>
+          <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">})</span>
+  <span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1.) Create an event listener for the install event:</span>
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">install</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 2.) Use the `ExtendableEvent.waitUntil({ //... })` method to </span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/hash.json</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`HTTP error! status: </span><span class="p">${</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">obj</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hash log 1: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">hash</span><span class="p">);</span>
+      <span class="nx">caches</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span>
+          <span class="dl">'</span><span class="s1">./index.html</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">./404.html</span><span class="dl">'</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/main.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.js`</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/main.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.css`</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/29.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.js`</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/314.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.js`</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/671.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.js`</span><span class="p">,</span>
+          <span class="s2">`./assets/js/dist/909.</span><span class="p">${</span><span class="nx">hash</span><span class="p">}</span><span class="s2">.js`</span><span class="p">,</span>
+        <span class="p">]);</span>
+      <span class="p">});</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">`Error in service worker's pre-install tasks: \n</span><span class="p">${</span><span class="nx">err</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+    <span class="p">})</span>
+  <span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">fetch</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">respondWith</span><span class="p">(</span>
+    <span class="nx">caches</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">resp</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">resp</span> <span class="o">||</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">caches</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">cache</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">clone</span><span class="p">());</span>
+          <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">})</span>
+  <span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#updating-the-app" aria-expanded="false" aria-controls="updating-the-app">
+        Updating the App
+      </button>
+    </h2>
+    <div id="updating-the-app" class="accordion-collapse collapse" aria-labelledby="updating-the-app">
+      <div class="accordion-body">
+        <h2 class="h2 mb-4" id="updating-the-app">Updating the App (and the Service Worker)</h2>
+
+<p><br /></p>
+
+<p class="p">In the <strong>Progressive Web App</strong> (PWA) architecture, service workers are used to serve the app cache-first. This gives the website or app near instantaneous load times on subsequent loads.</p>
+
+<p class="p">If any cached resource in the app/website has changed, the cache needs to be updated to reflect this change. Otherwise, you will 
+always see the old version served from the cache.</p>
+
+<p class="p">To update the cache you will need to delete the old one. However, <strong>you will want the new version of the service worker and cache 
+to be ready for installation before we do any deletion.</strong> Once the old cache is deleted, the new one can begin populating immediately.</p>
+
+<p class="p">By design, service workers will not activate until all tabs/windows using the old version of the worker are closed. 
+<strong>Once they are all closed, the new version will activate</strong> and it can then install the new version which should already be waiting for the <code class="language-plaintext code highlighter-rouge">oninstall</code> event.</p>
+
+<p class="p">Use the <code class="language-plaintext code highlighter-rouge">activate</code> event and <code class="language-plaintext code highlighter-rouge">event.waitUntil()</code> to manipulate the caches during service worker activation.</p>
+
+<p class="p">The <code class="language-plaintext code highlighter-rouge">cacheKeeplist</code> constant below holds an array of cache version to keep:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">activate</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">cacheKeeplist</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">v2</span><span class="dl">'</span><span class="p">];</span> <span class="c1">// Caches that should NOT be deleted</span>
+
+  <span class="nx">event</span><span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span>
+    <span class="nx">caches</span><span class="p">.</span><span class="nx">keys</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">keyList</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">keyList</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">cacheKeeplist</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">caches</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}));</span>
+    <span class="p">})</span>
+  <span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<p><br /></p>
+
+    </div>
+  </div>
+</main>
+<footer class="footer bg-light">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <p class="mb-0">&copy;&nbsp;<span id="copyrightYear">1988</span> Wesley Zajicek</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/dist/main.8f32f3882f1595ee96b5.js"></script>
+</body>
+</html>

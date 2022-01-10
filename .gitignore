@@ -1,15 +1,4 @@
-### Gem/Bundler stuffs to ignore ###
-*.gem
-.bundle
-
-## Prevent CloudCannon Errors
-.ruby-version
-
-### Ignore the Gemfile to keep it out of cloudcannon ###
-#Gemfile
-Gemfile.lock
-
-### General Apple things to ignore ###
+### General macOS things to ignore ###
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -33,33 +22,19 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Ignore jekyll _site build folder
-_site
-
-# Don't push these--that would be bad
-.sass-cache
-.jekyll-metadata
-
-### Nodejs Stuffs
+### Nodejs & npm things ###
 node_modules/
-# Avoid win/mac/linux discrepencies
 package-lock.json
 
-# Ignore gem lock to avoid mac/windows discrepencies
-#Gemfile.lock
+### Ruby and Bundler items to ignore ###
+# Bundler/Gem files to avoid
+Gemfile.lock
 
-# Ignore adobe directory containing working illustrator, photoshop,
-assets/adobe/
-assets/adobe/*
-/adobe/
-adobe/*
-
-# Yarn error log
-yarn-error.log
-
-# Ye Olde Gulp tasks from an API long, long ago, in a galaxy far, far away:
-old-gulp-tasks/
-old.gulpfile.js
-
-# Jekyll 4's caching dir
+### Jekyll things to ignore ###
+# Jekyll v4+ cache dir
 .jekyll-cache/
+.sass-cache 
+.jekyll-metadata
+
+# Ruby Version Manager (RVM) file
+.ruby-version

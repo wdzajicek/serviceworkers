@@ -5,7 +5,7 @@ title: Creating the Service Worker
 ---
 
 ## Creating the Service Worker
-{: .h2.mb-4 id="creating-service-worker"}
+{: .h2.mb-4 id="service-worker"}
 
 <br>
 

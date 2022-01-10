@@ -24,3 +24,5 @@ layout: default
 <br>
 
 {% include accordion.html %}
+
+<br>

@@ -2,7 +2,7 @@
 process.traceDeprecation = true;
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const WebpackHashFilePlugin = require('./buildtools/WebpackHashFilePlugin'); // Our custom plugin found in `/buildtools`
+const WebpackHashFilePlugin = require('./buildtools/WebpackHashFilePlugin'); // Custom plugin found in `./buildtools`
 const devMode = process.env.NODE_ENV !== 'production';
 
 const plugins = [
@@ -21,7 +21,7 @@ const plugins = [
     path: '../',
     fileName: 'hash',
     fileExtension: 'json'
-  }), // HASH IS USED TO KICK-OFF JEKYLL
+  }),
 ];
 
 const config = {

@@ -9,7 +9,7 @@ title: Overview
 
 This project was developed for the purpose of implementing 
 **service workers**, and other PWA functionality, into a specific 
-**JAMStack architecture** that I use to develop at work.
+**JAMStack architecture** that I use in web development at work.
 {: .p}
 
 Most JS documentation on service workers (or any other feature for that matter,) 
@@ -18,12 +18,17 @@ you to put it all together. instead, I wanted to provide a real-world example of
 implementing service workers, and the challenges I faced.
 {:.p}
 
-The JAMStack architecture use at work is a `Jekyll`{: .code}, `Nodejs`{: .code}, 
-`Webpack`{: .code} + `sass-laoder`{: .code} + `Corejs`{: .code} + `Babel`{: .code} +
-`ES6`{: .code} ,  `SASS`{: .code}, etc.... setup.
+The JAMStack architecture is a setup using `Jekyll`{: .code}, `Nodejs`{: .code}, 
+`Webpack`{: .code} + `sass-loader`{: .code} + `Corejs`{: .code} + `Babel`{: .code} +
+`ES6`{: .code} ,  `SASS`{: .code}, `autoprefixer`{: .code} etc.. This architecture 
+allows us to write and maintain a modular SASS setup for styling and ES6 which is 
+polyfilled and transpiled into JS with greater browser support. 
 {: .p}
 
-The two most important APIs used include **Google Sheets v4** and **Google Docs**.
+The project is setup to use the babel presets defined in `package.json`{: .code} &mdash; specifically, 
+Corejs v3 with ES proposals. Browser support is defined in the `"browserslist"`{: .code}. 
+Because I need to support IE10+ at work, I let `"useBuiltIns": "usage",`{: .code} handle the polyfilling
+as opposed to importing individual polyfills where I use them.
 {: .p}
 
 Our build process is handled using npm-scripts (<code class="code mx-1 code__bash">npm run <span class="code--blue">&lt;SCRIPT_NAME&gt;</span></code> ) 
@@ -47,4 +52,11 @@ hash&mdash;`'[fullHash]'`{: .code}&mdash;accessed inside a `webpack.config.js`{:
 _To be clear, when I use the word **"hash"** in this document, 
 I'm referring to the hash (i.e. the random looking string of characters) that Webpack 
 calculates from the files it consumed (e.g. `c1ffa09121e3327be06c`{: .code}.)_
+{: .p}
+
+The two most important APIs used include **Google Sheets** and **Google Docs**. 
+I often use the Google Sheets API when I have content/information that updates 
+frequently. Instead of running an entire site-build to generate new HTML, the 
+Sheets API allows me to _"fetch"_ new data (held in the spreadsheet) on-the-fly 
+as the user loads the page.
 {: .p}
