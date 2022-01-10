@@ -1,7 +1,7 @@
 ---
 title: Home
 description:
-baseurl: '/'
+baseurl: './'
 layout: default
 ---
 
