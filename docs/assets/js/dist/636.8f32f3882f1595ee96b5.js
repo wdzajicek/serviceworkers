@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkserviceworkers=self.webpackChunkserviceworkers||[]).push([[636],{5636:function(e,s,c){c.r(s),s.default=function(){navigator.serviceWorker.register("/serviceworker.js",{scope:"/"}).then((function(e){console.log("Registration succeeded. Scope is "+e.scope)})).catch((function(e){console.log("Registration failed with "+e)}))}}}]);

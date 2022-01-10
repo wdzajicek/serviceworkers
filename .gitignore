@@ -35,6 +35,7 @@ Gemfile.lock
 .jekyll-cache/
 .sass-cache 
 .jekyll-metadata
+_site
 
 # Ruby Version Manager (RVM) file
 .ruby-version
