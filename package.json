@@ -14,20 +14,6 @@
     "webpack-dev": "npx webpack --watch --node-env development",
     "browserslist": "npx browserslist@latest --update-db"
   },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "useBuiltIns": "usage",
-          "corejs": {
-            "version": 3,
-            "proposals": true
-          }
-        }
-      ]
-    ]
-  },
   "browserslist": [
     "defaults"
   ],

@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
     .then((obj) => {
       const hash = obj.hash;
 
-      caches.open('v1').then((cache) => {
+      caches.open('v2').then((cache) => {
         return cache.addAll([
           './index.html',
           './404.html',
@@ -25,7 +25,6 @@ self.addEventListener('install', (event) => {
           `./assets/js/dist/189.${hash}.js`,
           `./assets/js/dist/314.${hash}.js`,
           `./assets/js/dist/579.${hash}.js`,
-          `./assets/js/dist/584.${hash}.js`,
           `./assets/js/dist/636.${hash}.js`,
           `./assets/js/dist/671.${hash}.js`,
           `./assets/js/dist/676.${hash}.js`,
@@ -48,7 +47,7 @@ self.addEventListener('fetch', (event) => {
       return resp || fetch(event.request).then((response) => {
         let responseClone = response.clone();
 
-        caches.open('v1').then((cache) => {
+        caches.open('v2').then((cache) => {
           cache.put(event.request, responseClone);
           return response;
         }).catch(err => console.error('Not found in cache and no network', err))
@@ -58,16 +57,16 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Activate event is used to delete old caches once a new service worker is activated:
-// self.addEventListener('activate', (event) => {
-//   const cacheKeeplist = ['v2']; // Array of cache versions to keep
+self.addEventListener('activate', (event) => {
+  const cacheKeeplist = ['v2']; // Array of cache versions to keep
 
-//   event.waitUntil(
-//     caches.keys().then((keyList) => {
-//       return Promise.all(keyList.map((key) => {
-//         if (cacheKeeplist.indexOf(key) === -1) {
-//           return caches.delete(key);
-//         }
-//       }));
-//     })
-//   );
-// });
+  event.waitUntil(
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (cacheKeeplist.indexOf(key) === -1) {
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
+});

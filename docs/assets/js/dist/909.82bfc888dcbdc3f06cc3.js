@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkserviceworkers=self.webpackChunkserviceworkers||[]).push([[909],{909:function(e,n,t){t.r(n);const r=document.getElementById("copyrightYear");n.default=function(){const e=new Date;r.innerHTML=e.getFullYear()}}}]);
