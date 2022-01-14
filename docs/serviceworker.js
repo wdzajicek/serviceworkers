@@ -2,7 +2,7 @@
 self.addEventListener('install', (event) => {
   event.waitUntil(
     // `./hash.json` is an object containing Webpack's fullhash as the `hash` keys value
-    fetch('/hash.json').then(response => {
+    fetch('/serviceworkers/hash.json').then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
