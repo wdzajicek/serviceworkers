@@ -46,5 +46,6 @@ exclude:
   - "ruby-version.txt"
   - "buildtools/"
   - "postcss.config.js"
+  - "docs/"
 
 uploads_dir: "uploads/" # specifies the default uploads directory for uploads in CloudCannon

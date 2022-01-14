@@ -1,5 +1,5 @@
 function registerServiceWorker() {
-  navigator.serviceWorker.register('/serviceworker.js', { scope: '/'})
+  navigator.serviceWorker.register('./serviceworkers/serviceworker.js', { scope: './serviceworkers/'})
     .then((reg) => {
       // registration worked
       console.log('Registration succeeded. Scope is ' + reg.scope);
