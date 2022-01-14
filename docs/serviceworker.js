@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
     .then((obj) => {
       const hash = obj.hash;
 
-      caches.open('v2').then((cache) => {
+      caches.open('v3').then((cache) => {
         return cache.addAll([
           './index.html',
           './404.html',
@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event is used to delete old caches once a new service worker is activated:
 self.addEventListener('activate', (event) => {
-  const cacheKeeplist = ['v2']; // Array of cache versions to keep
+  const cacheKeeplist = ['v3']; // Array of cache versions to keep
 
   event.waitUntil(
     caches.keys().then((keyList) => {
